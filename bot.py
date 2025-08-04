@@ -320,3 +320,7 @@ class ModerationBot(commands.Bot):
             await ctx.send("❌ Je n'ai pas les permissions pour expulser cet utilisateur!")
         except Exception as e:
             await ctx.send(f"❌ Erreur lors de l'expulsion: {e}")
+            import os
+
+TOKEN = os.getenv("DISCORD_TOKEN")
+bot.run(TOKEN)
