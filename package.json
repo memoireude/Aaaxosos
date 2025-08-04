@@ -1,0 +1,10 @@
+{
+  "name": "aaaxosos-discord-bot",
+  "version": "1.0.0",
+  "description": "Bot Discord hébergé sur Render",
+  "main": "main.py",
+  "scripts": {
+    "start": "python main.py"
+  },
+  "dependencies": {}
+}
