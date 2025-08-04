@@ -11,6 +11,10 @@ import os
 # from utils.logger import log_moderation_action
 
 class ModerationBot(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix="+", intents=discord.Intents.all())
+        # ajoute tes commandes ici
+
     """Bot de modération Discord"""
     
     def __init__(self):
@@ -323,5 +327,7 @@ class ModerationBot(commands.Bot):
             await ctx.send(f"❌ Erreur lors de l'expulsion: {e}")
             import os
 
-TOKEN = os.getenv("DISCORD_TOKEN")
-bot.run(TOKEN)
+if __name__ == "__main__":
+    TOKEN = os.getenv("DISCORD_TOKEN")
+    bot = ModerationBot()
+    bot.run(TOKEN)
