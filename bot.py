@@ -6,8 +6,8 @@ import discord
 from discord.ext import commands
 import logging
 from datetime import datetime
-from utils.permissions import check_moderation_permissions, get_target_user
-from utils.logger import log_moderation_action
+# from utils.permissions import check_moderation_permissions, get_target_user
+# from utils.logger import log_moderation_action
 
 class ModerationBot(commands.Bot):
     """Bot de modération Discord"""
