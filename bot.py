@@ -2,6 +2,7 @@
 Bot Discord de modération avec commandes ban/unban/kick
 """
 
+import simple_bot
 import discord
 from discord.ext import commands
 import logging
