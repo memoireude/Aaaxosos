@@ -9,8 +9,8 @@ intents.message_content = True
 intents.members = True
 intents.guilds = True
 
-# Création du bot avec le préfixe +
-bot = commands.Bot(command_prefix='+', intents=intents)
+# Création du bot avec le préfixe + et désactivation de la commande help par défaut
+bot = commands.Bot(command_prefix='+', intents=intents, help_command=None)
 
 # Configuration du logger
 logging.basicConfig(level=logging.INFO)
