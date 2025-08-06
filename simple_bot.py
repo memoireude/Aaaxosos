@@ -108,13 +108,13 @@ async def help_command(ctx):
     )
 
     embed.add_field(
-        name="🔒🔓 **+lock all**",
+        name="🔒🔓 **+lockall**",
         value="Verrouiller tous les canaux du serveur.",
         inline=False
     )
 
     embed.add_field(
-        name="🔓🔒 **+unlock all**",
+        name="🔓🔒 **+unlockall**",
         value="Déverrouiller tous les canaux du serveur.",
         inline=False
     )
@@ -160,8 +160,8 @@ async def unlock(ctx, channel: discord.TextChannel = None):
     except Exception as e:
         await ctx.send(f"❌ Erreur lors du déverrouillage du canal : {str(e)}")
 
-# Commande +lock all
-@bot.command(name='lock all')
+# Commande +lockall
+@bot.command(name='lockall')
 async def lock_all(ctx):
     """Verrouiller tous les canaux du serveur"""
     for channel in ctx.guild.text_channels:
@@ -178,8 +178,8 @@ async def lock_all(ctx):
     )
     await ctx.send(embed=embed)
 
-# Commande +unlock all
-@bot.command(name='unlock all')
+# Commande +unlockall
+@bot.command(name='unlockall')
 async def unlock_all(ctx):
     """Déverrouiller tous les canaux du serveur"""
     for channel in ctx.guild.text_channels:
