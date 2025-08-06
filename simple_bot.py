@@ -2,113 +2,217 @@ import discord
 from discord.ext import commands
 import logging
 from datetime import datetime
-import os
 
-# Configuration des intents
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 intents.guilds = True
 
 # Configuration du bot
-bot = commands.Bot(command_prefix='+', intents=intents, help_command=None)
+bot = commands.Bot(command_prefix='+', intents=intents)
 
-# Logger pour le bot
+# Logger pour garder trace des événements
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('discord')
 
-# ID du channel où les notifications de redémarrage/arrêt seront envoyées
-NOTIFY_CHANNEL_ID = 1401557235871649873
+# ID du channel pour envoyer les notifications de redémarrage
+RESTART_CHANNEL_ID = 1401557235871649873
 
+# Événement lorsque le bot est prêt
 @bot.event
 async def on_ready():
-    """Message de notification lorsque le bot est prêt"""
-    logger.info(f'{bot.user} est maintenant en ligne et prêt à exécuter des commandes!')
-    channel = bot.get_channel(NOTIFY_CHANNEL_ID)
+    logger.info(f"Bot connecté sous le nom {bot.user}")
+    channel = bot.get_channel(RESTART_CHANNEL_ID)
     if channel:
-        await channel.send(f'🔵 {bot.user} vient de démarrer !')
+        await channel.send("🔄 **Le bot a redémarré !**")
 
-@bot.event
-async def on_disconnect():
-    """Message de notification lorsque le bot se déconnecte"""
-    logger.info(f'{bot.user} a été déconnecté!')
-    channel = bot.get_channel(NOTIFY_CHANNEL_ID)
-    if channel:
-        await channel.send(f'🔴 {bot.user} a été déconnecté.')
-
-@bot.command(name='help')
-async def help_command(ctx):
-    """Commande d'aide pour afficher les commandes disponibles"""
+# Commande +ping
+@bot.command(name='ping')
+async def ping(ctx):
+    """Commande de test de latence"""
     embed = discord.Embed(
-        title="🛡️ Aide du Bot de Modération",
-        description="Voici les commandes disponibles :",
-        color=discord.Color.blue(),
-        timestamp=datetime.now()
+        title="🏓 Pong!",
+        description=f"🏓 Latence : {round(bot.latency * 1000)}ms",
+        color=discord.Color.green(),
+        timestamp=datetime.utcnow()
     )
-    embed.add_field(name="🔨 +ban", value="Bannir un utilisateur. Usage: `+ban @utilisateur [raison]`", inline=False)
-    embed.add_field(name="🔓 +unban", value="Débannir un utilisateur. Usage: `+unban ID_utilisateur`", inline=False)
-    embed.add_field(name="👢 +kick", value="Expulser un utilisateur. Usage: `+kick @utilisateur [raison]`", inline=False)
-    embed.add_field(name="🔒 +lock", value="Verrouiller un channel. Usage: `+lock`", inline=False)
-    embed.add_field(name="🔓 +unlock", value="Déverrouiller un channel. Usage: `+unlock`", inline=False)
-    embed.add_field(name="🔒 +lockall", value="Verrouiller tous les channels. Usage: `+lockall`", inline=False)
-    embed.add_field(name="🔓 +unlockall", value="Déverrouiller tous les channels. Usage: `+unlockall`", inline=False)
+    embed.set_footer(text="Commande +ping")
     await ctx.send(embed=embed)
 
+# Commande +test
+@bot.command(name='test')
+async def test(ctx):
+    """Commande pour tester que tout fonctionne"""
+    embed = discord.Embed(
+        title="✅ Test",
+        description="Le bot fonctionne correctement !",
+        color=discord.Color.blue(),
+        timestamp=datetime.utcnow()
+    )
+    embed.set_footer(text="Commande +test")
+    await ctx.send(embed=embed)
+
+# Commande +help (personnalisée)
+@bot.command(name='help')
+async def help_command(ctx):
+    """Affiche les commandes disponibles"""
+    embed = discord.Embed(
+        title="🛠️ Aide - Commandes du Bot",
+        description="Voici la liste des commandes disponibles :",
+        color=discord.Color.orange(),
+        timestamp=datetime.utcnow()
+    )
+    
+    embed.add_field(
+        name="🔨 +ban",
+        value="Bannir un utilisateur. Usage: `+ban @utilisateur [raison]`",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="🔓 +unban",
+        value="Débannir un utilisateur. Usage: `+unban [ID/nom#discriminator]`",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="👢 +kick",
+        value="Expulser un utilisateur. Usage: `+kick @utilisateur [raison]`",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="📊 +ping",
+        value="Vérifier la latence du bot.",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="💬 +test",
+        value="Vérifier que le bot fonctionne.",
+        inline=False
+    )
+    
+    embed.set_footer(text="Bot de modération - +help")
+    await ctx.send(embed=embed)
+
+# Commande +ban
 @bot.command(name='ban')
 @commands.has_permissions(ban_members=True)
-async def ban_user(ctx, member: discord.Member, *, reason=None):
-    """Commande pour bannir un utilisateur"""
-    if not reason:
-        reason = "Aucune raison fournie."
-    await member.ban(reason=reason)
-    await ctx.send(f"{member} a été banni pour : {reason}")
+@commands.bot_has_permissions(ban_members=True)
+async def ban_user(ctx, member: discord.Member = None, *, reason=None):
+    """Bannir un utilisateur"""
+    if member is None:
+        await ctx.send("❌ Veuillez mentionner un utilisateur à bannir !")
+        return
 
+    if reason is None:
+        reason = "Aucune raison fournie."
+
+    try:
+        await member.ban(reason=reason)
+        embed = discord.Embed(
+            title="🔨 Utilisateur banni",
+            description=f"{member} a été banni avec succès.",
+            color=discord.Color.red(),
+            timestamp=datetime.utcnow()
+        )
+        embed.add_field(name="Raison", value=reason, inline=False)
+        await ctx.send(embed=embed)
+        logger.info(f"{member} a été banni pour: {reason}")
+    except discord.Forbidden:
+        await ctx.send("❌ Je n'ai pas les permissions nécessaires pour bannir cet utilisateur.")
+
+# Commande +unban
 @bot.command(name='unban')
 @commands.has_permissions(ban_members=True)
-async def unban_user(ctx, user_id: int):
-    """Commande pour débannir un utilisateur par son ID"""
-    user = await bot.fetch_user(user_id)
-    await ctx.guild.unban(user)
-    await ctx.send(f"{user} a été débanni!")
+@commands.bot_has_permissions(ban_members=True)
+async def unban_user(ctx, user_info: str):
+    """Débannir un utilisateur"""
+    try:
+        banned_users = await ctx.guild.bans()
+        target_user = None
+        for ban_entry in banned_users:
+            if user_info.lower() in str(ban_entry.user).lower():
+                target_user = ban_entry.user
+                break
 
+        if target_user is None:
+            await ctx.send("❌ Utilisateur non trouvé parmi les bannis.")
+            return
+        
+        await ctx.guild.unban(target_user)
+        embed = discord.Embed(
+            title="🔓 Utilisateur débanni",
+            description=f"{target_user} a été débanni du serveur.",
+            color=discord.Color.green(),
+            timestamp=datetime.utcnow()
+        )
+        await ctx.send(embed=embed)
+        logger.info(f"{target_user} a été débanni.")
+    except discord.Forbidden:
+        await ctx.send("❌ Je n'ai pas les permissions nécessaires pour débannir cet utilisateur.")
+
+# Commande +kick
 @bot.command(name='kick')
 @commands.has_permissions(kick_members=True)
+@commands.bot_has_permissions(kick_members=True)
 async def kick_user(ctx, member: discord.Member, *, reason=None):
-    """Commande pour expulser un utilisateur"""
-    if not reason:
+    """Expulser un utilisateur"""
+    if reason is None:
         reason = "Aucune raison fournie."
-    await member.kick(reason=reason)
-    await ctx.send(f"{member} a été expulsé pour : {reason}")
+    
+    try:
+        await member.kick(reason=reason)
+        embed = discord.Embed(
+            title="👢 Utilisateur expulsé",
+            description=f"{member} a été expulsé.",
+            color=discord.Color.orange(),
+            timestamp=datetime.utcnow()
+        )
+        embed.add_field(name="Raison", value=reason, inline=False)
+        await ctx.send(embed=embed)
+        logger.info(f"{member} a été expulsé pour: {reason}")
+    except discord.Forbidden:
+        await ctx.send("❌ Je n'ai pas les permissions nécessaires pour expulser cet utilisateur.")
 
-@bot.command(name='lock')
-@commands.has_permissions(manage_channels=True)
-async def lock_channel(ctx):
-    """Verrouille un channel"""
-    await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=False)
-    await ctx.send(f"🔒 Le channel {ctx.channel.mention} a été verrouillé.")
-
-@bot.command(name='unlock')
-@commands.has_permissions(manage_channels=True)
-async def unlock_channel(ctx):
-    """Déverrouille un channel"""
-    await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=True)
-    await ctx.send(f"🔓 Le channel {ctx.channel.mention} a été déverrouillé.")
-
+# Commandes lock/unlock all
 @bot.command(name='lockall')
 @commands.has_permissions(manage_channels=True)
-async def lock_all_channels(ctx):
-    """Verrouille tous les channels"""
+@commands.bot_has_permissions(manage_channels=True)
+async def lock_all(ctx):
+    """Verrouiller tous les canaux"""
     for channel in ctx.guild.text_channels:
         await channel.set_permissions(ctx.guild.default_role, send_messages=False)
-    await ctx.send("🔒 Tous les channels ont été verrouillés.")
+    embed = discord.Embed(
+        title="🔒 Canaux verrouillés",
+        description="Tous les canaux ont été verrouillés.",
+        color=discord.Color.red(),
+        timestamp=datetime.utcnow()
+    )
+    await ctx.send(embed=embed)
 
 @bot.command(name='unlockall')
 @commands.has_permissions(manage_channels=True)
-async def unlock_all_channels(ctx):
-    """Déverrouille tous les channels"""
+@commands.bot_has_permissions(manage_channels=True)
+async def unlock_all(ctx):
+    """Déverrouiller tous les canaux"""
     for channel in ctx.guild.text_channels:
         await channel.set_permissions(ctx.guild.default_role, send_messages=True)
-    await ctx.send("🔓 Tous les channels ont été déverrouillés.")
+    embed = discord.Embed(
+        title="🔓 Canaux déverrouillés",
+        description="Tous les canaux ont été déverrouillés.",
+        color=discord.Color.green(),
+        timestamp=datetime.utcnow()
+    )
+    await ctx.send(embed=embed)
 
-# Ne pas oublier de mettre le token du bot dans les variables d'environnement
-bot.run(os.getenv("DISCORD_TOKEN"))
+# Commande pour envoyer un message de redémarrage
+@bot.event
+async def on_ready():
+    channel = bot.get_channel(RESTART_CHANNEL_ID)
+    if channel:
+        await channel.send("🔄 Le bot a redémarré avec succès !")
+
+# Lancer le bot
+bot.run('DISCORD_TOKEN')
