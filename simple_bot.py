@@ -93,7 +93,7 @@ async def custom_help(ctx):
 # ========== Démarrage ==========
 # Remplace os.getenv("TOKEN") par ton token si tu ne l’utilises pas via .env
 import os
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
     print("❌ TOKEN manquant. Assure-toi d'avoir mis le token dans l'environnement.")
 else:
