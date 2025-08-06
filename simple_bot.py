@@ -11,7 +11,7 @@ intents.members = True
 intents.guilds = True
 
 # Configuration du bot
-bot = commands.Bot(command_prefix='+', intents=intents)
+bot = commands.Bot(command_prefix='+', intents=intents, help_command=None)
 
 # Logger pour le bot
 logging.basicConfig(level=logging.INFO)
