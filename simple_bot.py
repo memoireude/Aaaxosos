@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
+import os
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -162,5 +163,10 @@ async def on_ready():
         await channel.send("🛠️ Le bot a redémarré avec succès!")
     print(f'Bot connecté en tant que {bot.user}')
 
-# Lancer le bot avec le token
-bot.run('DISCORD_TOKEN')  # Le token sera pris automatiquement de l'environnement
+# Utilisation de la variable d'environnement pour récupérer le token
+TOKEN = os.getenv('DISCORD_TOKEN')
+
+if TOKEN:
+    bot.run(TOKEN)
+else:
+    print("Erreur : le token Discord n'a pas été trouvé.")
