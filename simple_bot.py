@@ -94,8 +94,106 @@ async def help_command(ctx):
         value="Vérifier que le bot fonctionne correctement.",
         inline=False
     )
+    
+    embed.add_field(
+        name="🔒 **+lock**",
+        value="Verrouiller un canal (empêche l'envoi de messages). Usage : `+lock #canal`",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="🔓 **+unlock**",
+        value="Déverrouiller un canal (permet l'envoi de messages). Usage : `+unlock #canal`",
+        inline=False
+    )
+
+    embed.add_field(
+        name="🔒🔓 **+lock all**",
+        value="Verrouiller tous les canaux du serveur.",
+        inline=False
+    )
+
+    embed.add_field(
+        name="🔓🔒 **+unlock all**",
+        value="Déverrouiller tous les canaux du serveur.",
+        inline=False
+    )
 
     embed.set_footer(text="Bot de modération - +help")
+    await ctx.send(embed=embed)
+
+# Commande +lock
+@bot.command(name='lock')
+async def lock(ctx, channel: discord.TextChannel = None):
+    """Verrouiller un canal spécifique"""
+    if not channel:
+        channel = ctx.channel  # Si aucun canal n'est mentionné, utiliser le canal actuel
+    
+    try:
+        await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        embed = discord.Embed(
+            title="🔒 **Canal Verrouillé**",
+            description=f"Le canal {channel.mention} est maintenant verrouillé. Les membres ne peuvent plus envoyer de messages.",
+            color=discord.Color.red(),
+            timestamp=datetime.utcnow()
+        )
+        await ctx.send(embed=embed)
+    except Exception as e:
+        await ctx.send(f"❌ Erreur lors du verrouillage du canal : {str(e)}")
+
+# Commande +unlock
+@bot.command(name='unlock')
+async def unlock(ctx, channel: discord.TextChannel = None):
+    """Déverrouiller un canal spécifique"""
+    if not channel:
+        channel = ctx.channel  # Si aucun canal n'est mentionné, utiliser le canal actuel
+    
+    try:
+        await channel.set_permissions(ctx.guild.default_role, send_messages=True)
+        embed = discord.Embed(
+            title="🔓 **Canal Déverrouillé**",
+            description=f"Le canal {channel.mention} est maintenant déverrouillé. Les membres peuvent à nouveau envoyer des messages.",
+            color=discord.Color.green(),
+            timestamp=datetime.utcnow()
+        )
+        await ctx.send(embed=embed)
+    except Exception as e:
+        await ctx.send(f"❌ Erreur lors du déverrouillage du canal : {str(e)}")
+
+# Commande +lock all
+@bot.command(name='lock all')
+async def lock_all(ctx):
+    """Verrouiller tous les canaux du serveur"""
+    for channel in ctx.guild.text_channels:
+        try:
+            await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        except Exception as e:
+            await ctx.send(f"❌ Erreur lors du verrouillage du canal {channel.mention}: {str(e)}")
+    
+    embed = discord.Embed(
+        title="🔒 **Tous les canaux ont été verrouillés**",
+        description="Tous les canaux de ce serveur sont maintenant verrouillés.",
+        color=discord.Color.red(),
+        timestamp=datetime.utcnow()
+    )
+    await ctx.send(embed=embed)
+
+# Commande +unlock all
+@bot.command(name='unlock all')
+async def unlock_all(ctx):
+    """Déverrouiller tous les canaux du serveur"""
+    for channel in ctx.guild.text_channels:
+        try:
+            await channel.set_permissions(ctx.guild.default_role, send_messages=True)
+        except Exception as e:
+            await ctx.send(f"❌ Erreur lors du déverrouillage du canal {channel.mention}: {str(e)}")
+    
+    embed = discord.Embed(
+        title="🔓 **Tous les canaux ont été déverrouillés**",
+        description="Tous les canaux de ce serveur sont maintenant déverrouillés.",
+        color=discord.Color.green(),
+        timestamp=datetime.utcnow()
+    )
     await ctx.send(embed=embed)
 
 # Lancer le bot avec le token depuis la variable d'environnement
