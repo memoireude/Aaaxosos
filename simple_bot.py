@@ -53,7 +53,7 @@ async def test(ctx):
     embed.set_footer(text="Commande +test")
     await ctx.send(embed=embed)
 
-# Commande +help personnalisée
+# Commande d'aide personnalisée pour remplacer la commande native 'help'
 @bot.command(name='help')
 async def help_command(ctx):
     """Affiche les commandes disponibles"""
