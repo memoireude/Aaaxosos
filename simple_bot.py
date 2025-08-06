@@ -27,8 +27,34 @@ async def help_command(ctx):
     embed.add_field(name="🔓 +unlock", value="Déverrouiller un canal", inline=False)
     embed.add_field(name="🔒 +lockall", value="Verrouiller tous les canaux", inline=False)
     embed.add_field(name="🔓 +unlockall", value="Déverrouiller tous les canaux", inline=False)
+    embed.add_field(name="📶 +ping", value="Vérifier la latence du bot", inline=False)
+    embed.add_field(name="🛠️ +test", value="Commande de test", inline=False)
     
     embed.set_footer(text=f"Demandé par {ctx.author}", icon_url=ctx.author.avatar.url)
+    await ctx.send(embed=embed)
+
+# Commande +ping
+@bot.command(name='ping')
+async def ping(ctx):
+    """Commande pour vérifier la latence du bot"""
+    embed = discord.Embed(
+        title="📶 Ping",
+        description=f"Latence du bot : {round(bot.latency * 1000)}ms",
+        color=discord.Color.green(),
+        timestamp=datetime.utcnow()
+    )
+    await ctx.send(embed=embed)
+
+# Commande +test
+@bot.command(name='test')
+async def test(ctx):
+    """Commande de test"""
+    embed = discord.Embed(
+        title="🛠️ Test",
+        description="Commande de test exécutée avec succès !",
+        color=discord.Color.orange(),
+        timestamp=datetime.utcnow()
+    )
     await ctx.send(embed=embed)
 
 # Commande +lock
