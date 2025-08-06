@@ -6,15 +6,10 @@ import discord
 from discord.ext import commands
 import logging
 from datetime import datetime
-import os
-# from utils.permissions import check_moderation_permissions, get_target_user
-# from utils.logger import log_moderation_action
+from utils.permissions import check_moderation_permissions, get_target_user
+from utils.logger import log_moderation_action
 
 class ModerationBot(commands.Bot):
-    def __init__(self):
-        super().__init__(command_prefix="+", intents=discord.Intents.all())
-        # ajoute tes commandes ici
-
     """Bot de modération Discord"""
     
     def __init__(self):
@@ -325,9 +320,3 @@ class ModerationBot(commands.Bot):
             await ctx.send("❌ Je n'ai pas les permissions pour expulser cet utilisateur!")
         except Exception as e:
             await ctx.send(f"❌ Erreur lors de l'expulsion: {e}")
-            import os
-
-if __name__ == "__main__":
-    TOKEN = os.getenv("DISCORD_TOKEN")
-    bot = ModerationBot()
-    bot.run(TOKEN)
