@@ -313,7 +313,7 @@ class ModerationBot(commands.Bot):
             
             await ctx.send(embed=embed)
             
-            # Log de l'action
+            # Log de l'action oi
             log_moderation_action("KICK", ctx.author, target_user, reason, ctx.guild)
             
         except discord.Forbidden:
