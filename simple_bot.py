@@ -201,3 +201,5 @@ async def mute(ctx, *args):
         except Exception as e:
             await ctx.send(f"❌ Erreur lors du mute de {member}: {e}")
             logger.error(f"ERREUR MUTE: {e} pour {member}")
+            
+            bot.run(os.getenv("DISCORD_TOKEN"))
