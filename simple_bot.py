@@ -61,7 +61,10 @@ async def test(ctx):
 @bot.command(name='lock')
 async def lock_channel(ctx, channel: discord.TextChannel = None):
     """Verrouiller un canal spécifique"""
-    channel = channel or ctx.channel
+    if not channel:
+        await ctx.send("❌ Vous devez mentionner un canal à verrouiller.")
+        return
+
     try:
         await channel.set_permissions(ctx.guild.default_role, send_messages=False)
         embed = discord.Embed(
@@ -78,7 +81,10 @@ async def lock_channel(ctx, channel: discord.TextChannel = None):
 @bot.command(name='unlock')
 async def unlock_channel(ctx, channel: discord.TextChannel = None):
     """Déverrouiller un canal spécifique"""
-    channel = channel or ctx.channel
+    if not channel:
+        await ctx.send("❌ Vous devez mentionner un canal à déverrouiller.")
+        return
+
     try:
         await channel.set_permissions(ctx.guild.default_role, send_messages=True)
         embed = discord.Embed(
@@ -130,8 +136,12 @@ async def unlock_all(ctx):
 # Commande +ban
 @bot.command(name='ban')
 @commands.has_permissions(ban_members=True)
-async def ban_user(ctx, member: discord.Member, *, reason=None):
+async def ban_user(ctx, member: discord.Member = None, *, reason=None):
     """Bannir un utilisateur"""
+    if not member:
+        await ctx.send("❌ Vous devez mentionner un utilisateur à bannir.")
+        return
+
     reason = reason or f"Banni par {ctx.author}"
     try:
         await member.ban(reason=reason)
@@ -148,8 +158,12 @@ async def ban_user(ctx, member: discord.Member, *, reason=None):
 # Commande +unban
 @bot.command(name='unban')
 @commands.has_permissions(ban_members=True)
-async def unban_user(ctx, user_id: int):
+async def unban_user(ctx, user_id: int = None):
     """Débannir un utilisateur par ID"""
+    if not user_id:
+        await ctx.send("❌ Vous devez fournir un ID d'utilisateur à débannir.")
+        return
+
     try:
         user = await bot.fetch_user(user_id)
         await ctx.guild.unban(user)
@@ -166,8 +180,12 @@ async def unban_user(ctx, user_id: int):
 # Commande +kick
 @bot.command(name='kick')
 @commands.has_permissions(kick_members=True)
-async def kick_user(ctx, member: discord.Member, *, reason=None):
+async def kick_user(ctx, member: discord.Member = None, *, reason=None):
     """Expulser un utilisateur"""
+    if not member:
+        await ctx.send("❌ Vous devez mentionner un utilisateur à expulser.")
+        return
+
     reason = reason or f"Expulsé par {ctx.author}"
     try:
         await member.kick(reason=reason)
