@@ -10,15 +10,19 @@ intents.message_content = True
 intents.members = True
 intents.guilds = True
 
-bot = commands.Bot(command_prefix='+', intents=intents)
+bot = commands.Bot(command_prefix='+', intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
     print(f'Bot connecté en tant que {bot.user}')
+    # Envoyer un message dans le canal spécifique lorsque le bot redémarre
+    channel = bot.get_channel(1401557235871649873)
+    if channel:
+        await channel.send("🔄 L'instance du bot a redémarré ou s'est lancée avec succès!")
 
 # Commande +help
 @bot.command()
-async def help(ctx):
+async def bothelp(ctx):
     embed = discord.Embed(
         title="🛡️ Commandes du Bot",
         description="Voici la liste des commandes disponibles :",
@@ -30,6 +34,8 @@ async def help(ctx):
     embed.add_field(name="+kick", value="Expulser un utilisateur. Usage: `+kick @utilisateur [raison]`", inline=False)
     embed.add_field(name="+lockall", value="Verrouiller tous les salons textuels.", inline=False)
     embed.add_field(name="+unlockall", value="Déverrouiller tous les salons textuels.", inline=False)
+    embed.add_field(name="+lock all", value="Verrouiller tous les salons textuels. Usage: `+lock all`", inline=False)
+    embed.add_field(name="+unlock all", value="Déverrouiller tous les salons textuels. Usage: `+unlock all`", inline=False)
     
     await ctx.send(embed=embed)
 
